@@ -1,8 +1,10 @@
-# Example file showing a basic pygame "game loop"
 import pygame
+from settings import Settings
 
-# pygame setup
+
 pygame.init()
+gm_set = Settings()
+
 screen = pygame.display.set_mode((800, 600))
 running = True
 
@@ -12,8 +14,12 @@ while running:
             running = False
 
     screen.fill("mediumblue")
-    
     pygame.display.set_caption("Bubble Bluster")
+    
+    
+    
+    
+    
     
     pygame.display.flip()
 pygame.quit()
