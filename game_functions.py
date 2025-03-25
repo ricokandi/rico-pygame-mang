@@ -1,8 +1,15 @@
 import sys
 import pygame
 from player import Player
+from bubble import Bubble
 
-def check_events(player):
+
+pygame.init()
+ADDBUBBLE = pygame.USEREVENT + 1
+pygame.time.set_timer(ADDBUBBLE, 250)
+
+
+def check_events(game_settings, screen, player, bubbles):
     """Kontrolli klaviatuuri vajutusi"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -25,10 +32,19 @@ def check_events(player):
                 player.moving_up = False
             if event.key == pygame.K_DOWN:
                 player.moving_down = False
-            
-            
-def update_screen(game_settings, screen, player):
+        elif event.type == ADDBUBBLE:
+            create_bubble(game_settings, screen, bubbles)
+
+
+def create_bubble(game_settings, screen, bubbles):
+    new_bubble = Bubble(screen, game_settings)
+    bubbles.add(new_bubble)
+   
+   
+def update_screen(game_settings, screen, player, bubbles):
     """Uuenda ekraani pilti ja joonista uus ekraan"""
     screen.fill(game_settings.bg_colour)
     player.blit_me()
+    for bubble in bubbles:
+        bubble.blit_me()
     pygame.display.flip()
