@@ -9,7 +9,7 @@ ADDBUBBLE = pygame.USEREVENT + 1
 pygame.time.set_timer(ADDBUBBLE, 250)
 
 
-def check_events(game_settings, screen, player, bubbles):
+def check_events(game_settings, screen, player, bubbles, stats, play_button):
     """Kontrolli klaviatuuri vajutusi"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -34,6 +34,14 @@ def check_events(game_settings, screen, player, bubbles):
                 player.moving_down = False
         elif event.type == ADDBUBBLE:
             create_bubble(game_settings, screen, bubbles)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            check_play_button(stats, play_button, mouse_x, mouse_y)
+
+
+def check_play_button(stats, play_button, mouse_x, mouse_y):
+    if play_button.rect.collidepoint(mouse_x, mouse_y):
+        stats.game_active = True
 
 
 def create_bubble(game_settings, screen, bubbles):
@@ -41,17 +49,30 @@ def create_bubble(game_settings, screen, bubbles):
     bubbles.add(new_bubble)
 
 
-def update_bubbles(player, bubbles):
+def update_bubbles(player, bubbles, stats, sb):
     hitted_bubble = pygame.sprite.spritecollideany(player, bubbles)
     if hitted_bubble != None:
+        stats.score += hitted_bubble.bubble_radius
+        sb.prepare_score()
+        print(stats.score)
         hitted_bubble.kill()
 
 
-def update_screen(game_settings, screen, player, bubbles, clock):
+def update_screen(game_settings, screen, player, bubbles, clock, stats, play_button, sb):
     """Uuenda ekraani pilti ja joonista uus ekraan"""
+    # lisa ekraani taust
     screen.fill(game_settings.bg_colour)
+    # lisa mängija ekraanile
     player.blit_me()
+    # lisa mullid ekraanile
     for bubble in bubbles:
         bubble.blit_me()
+    #näita skoori
+    sb.draw_score()
+    # mängu kiirus on 30 kaadrit sekundis
     clock.tick(30)
+    #näita "play" nuppu
+    if not stats.game_active:
+        play_button.draw_button()
+    # näita lõpuekraani
     pygame.display.flip()
